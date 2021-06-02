@@ -1,4 +1,4 @@
-import React, {useEffect, useState, FormEvent} from "react"
+import React, {useEffect, useState} from "react"
 import {fetchImages} from "./api";
 import {BrowserRouter, Route, Link, Switch} from "react-router-dom"
 
@@ -16,8 +16,10 @@ function Header() {
     )
 }
 
-function Gacha() {
 
+function Gacha() {
+    const item = document.querySelector(".gachaResult");
+    
     const [probSSR, setProbSSR] = React.useState('');
     const [probSR, setProbSR] = useState('');
 
@@ -31,7 +33,8 @@ function Gacha() {
 
     function handleSubmit(e){ // 「ガチャる」ボタンを押したときのメソッド
         e.preventDefault();
-        alert(Result(probSSR, probSR)); // ガチャ結果をアラート表示
+        const results = Result(probSSR, probSR);
+        item.textContent = results;
     }
 
     function Result(ssr, sr){
@@ -50,13 +53,13 @@ function Gacha() {
         ssr /= 100.0;
         sr /= 100.0;
 
-        if((ssr >= 0 && ssr <= 1) && (sr >= 0 && sr <= 1)){
+        if((ssr > 0 && ssr <= 1) && (sr > 0 && sr <= 1) && (ssr + sr <= 1)){
             for(let count=0; count<max; count++){
                 if(rCount < 9){
                     if(probability<=ssr){ // ランダム変数の値がssr以下の場合SSRを排出
                         resultArray.push(ssRare);
                     }else if(probability<=ssr+sr){ // ランダム変数の値がssr以上sr以下の場合SRを排出
-                        resultArray.push(sRare);
+                     resultArray.push(sRare);
                     }else { // ランダム変数の値がssr、sr以上の場合はRを排出
                         resultArray.push(rare);
                         rCount++;
@@ -92,18 +95,21 @@ function Gacha() {
                         <label className="label">SSR確率</label>
                         <div className="control">
                             <input id="SSR" value={probSSR} onChange={handleChange1} 
-                            className="input is-small" type="number" placeholder="0~100" />
+                            className="input is-small" type="text" placeholder="0~100" />
                             <p>%</p>
                         </div>
                     
                         <label className="label">SR確率</label>
                         <div className="control">
                             <input id="SR" value={probSR} onChange={handleChange2}
-                            className="input is-small" type="number" placeholder="0~100" />
+                            className="input is-small" type="text" placeholder="0~100" />
                             <p>%</p>
                         </div>
 
-                        <button className="button is-primry">ガチャる！</button>
+                        <button onClick={item} className="button is-primry">ガチャる！</button>
+
+                        <p className="gachaResult"></p>
+                                                
                     </form>
                 </div>
             </div>
@@ -193,8 +199,6 @@ function Healing(){
                     <Dog url={url} />
                 </div>
             </section>
-            
-            
         </main>
     )
 }
